@@ -50,4 +50,15 @@ public class CredentialsJPARepositoryAdapter extends AdapterOperations<
             throw new TechnicalException(TechnicalExceptionMessage.SAVING_CREDENTIALS_ERROR);
         }
     }
+
+    @Override
+    public String findPasswordHashByUserId(Long userId) {
+        try {
+            return repository.findByUserAccountEntity_Id(userId)
+                    .map(CredentialsEntity::getPasswordHash)
+                    .orElseThrow(() -> new TechnicalException(TechnicalExceptionMessage.CREDENTIALS_NOT_FOUND));
+        } catch (Exception e) {
+            throw new TechnicalException(TechnicalExceptionMessage.FIND_CREDENTIALS_ERROR);
+        }
+    }
 }

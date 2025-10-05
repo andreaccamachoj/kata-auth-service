@@ -9,6 +9,10 @@ public enum BusinessExceptionMessage {
     USER_ALREADY_EXISTS(
             "BUS0001", "User already exists", "409",
             "The user with the provided email or identity document already exists in the system."
+    ),
+    INVALID_OR_EXPIRED_TOKEN(
+            "BUS0002", "The provided token is invalid or has expired", "409",
+                    "The token provided for authentication is either invalid or has expired. Please log in again to obtain a new token."
     );
 
     private final String code;

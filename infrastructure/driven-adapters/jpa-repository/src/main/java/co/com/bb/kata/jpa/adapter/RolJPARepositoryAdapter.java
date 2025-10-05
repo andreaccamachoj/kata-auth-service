@@ -3,6 +3,8 @@ package co.com.bb.kata.jpa.adapter;
 import co.com.bb.kata.jpa.RolJPARepository;
 import co.com.bb.kata.jpa.entity.RoleEntity;
 import co.com.bb.kata.jpa.helper.AdapterOperations;
+import co.com.bb.kata.model.exception.TechnicalException;
+import co.com.bb.kata.model.exception.message.TechnicalExceptionMessage;
 import co.com.bb.kata.model.rol.Rol;
 import co.com.bb.kata.model.rol.gateways.RolRepository;
 import org.reactivecommons.utils.ObjectMapper;
@@ -34,6 +36,19 @@ public class RolJPARepositoryAdapter extends AdapterOperations<
         } catch (Exception e) {
             log.error("[ROL-REPO] Error checking role existence for ID {}: {}", idRol, e.getMessage(), e);
             return false;
+        }
+    }
+
+    @Override
+    public String findNameByIdRole(Long idRole) {
+        log.info("[ROLE-REPO] Starting search for role name with idRole={}", idRole);
+        try {
+            return repository.findByIdRole(idRole)
+                    .map(RoleEntity::getName)
+                    .orElseThrow(() -> new TechnicalException(TechnicalExceptionMessage.ROL_NOT_FOUND));
+        } catch (Exception e) {
+            log.error("[ROLE-REPO] Unexpected error while searching role with idRole={}: {}", idRole, e.getMessage(), e);
+            throw new TechnicalException(TechnicalExceptionMessage.ROL_NOT_FOUND);
         }
     }
 }

@@ -58,4 +58,25 @@ public class UserAccountJPARepositoryAdapter extends AdapterOperations<
             throw new BusinessException(BusinessExceptionMessage.USER_ALREADY_EXISTS);
         }
     }
+
+    @Override
+    public UserAccount findByEmail(String email) {
+        try {
+            return repository.findByEmail(email)
+                    .map(entity -> {
+                        UserAccount model = mapper.map(entity, UserAccount.class);
+                        if (entity.getRole() != null) {
+                            model.setRoleId(entity.getRole().getIdRole());
+                        }
+                        return model;
+                    })
+                    .orElseThrow(() -> new TechnicalException(TechnicalExceptionMessage.USER_NOT_FOUND));
+
+        } catch (TechnicalException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("[USER-REPO] Error finding user by email '{}': {}", email, e.getMessage(), e);
+            throw new TechnicalException(TechnicalExceptionMessage.FIND_USER_ERROR);
+        }
+    }
 }

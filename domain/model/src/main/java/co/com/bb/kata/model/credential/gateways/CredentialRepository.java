@@ -4,4 +4,5 @@ import co.com.bb.kata.model.credential.Credential;
 
 public interface CredentialRepository {
     public Credential saveCredential(Credential credential);
+    public String findPasswordHashByUserId(Long userId);
 }
