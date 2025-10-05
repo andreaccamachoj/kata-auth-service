@@ -12,9 +12,9 @@ spring:
   profiles:
     include: null
   datasource:
-    url: "jdbc:postgresql://localhost:5432/auth"
-    username: "postgres"
-    password: "root"
+    url: "${URL:DB:jdbc:postgresql://localhost:5432/auth}"
+    username: "${USERNAME_DB:postgres}"
+    password: "${PASSWORD_DB:root}"
     driverClassName: "org.postgresql.Driver"
   jpa:
     hibernate:
@@ -31,4 +31,4 @@ management:
       probes:
         enabled: true
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: "${ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}"
