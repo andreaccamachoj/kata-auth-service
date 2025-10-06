@@ -93,4 +93,16 @@ public class AuthUseCase {
         }
     }
 
+    public void deactivateTokensByUserId(Long userId) {
+        tokenSessionRepository.deactivateTokensByUserId(userId);
+    }
+
+    public UserAccount getUserByIdUsuario(Long id) {
+        UserAccount user = userAccountRepository.findByIdUsuario(id);
+        if (user == null) {
+            throw new BusinessException(BusinessExceptionMessage.USER_BY_EMAIL_NOT_FOUND);
+        }
+        return user;
+    }
+
 }

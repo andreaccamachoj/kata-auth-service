@@ -4,4 +4,5 @@ import co.com.bb.kata.model.tokensession.TokenSession;
 
 public interface TokenSessionRepository {
     public TokenSession saveTokenSession(TokenSession tokenSession);
+    public void deactivateTokensByUserId(Long userId);
 }

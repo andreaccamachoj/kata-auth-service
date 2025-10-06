@@ -20,6 +20,7 @@ public class UserAccount {
     private LocalDate birthDate;
     private String phone;
     private Long roleId;
+    private String roleName;
 
 //    private Role role;
 //

@@ -67,6 +67,7 @@ public class UserAccountJPARepositoryAdapter extends AdapterOperations<
                         UserAccount model = mapper.map(entity, UserAccount.class);
                         if (entity.getRole() != null) {
                             model.setRoleId(entity.getRole().getIdRole());
+                            model.setRoleName(entity.getRole().getName());
                         }
                         return model;
                     })
@@ -76,6 +77,30 @@ public class UserAccountJPARepositoryAdapter extends AdapterOperations<
             throw e;
         } catch (Exception e) {
             log.error("[USER-REPO] Error finding user by email '{}': {}", email, e.getMessage(), e);
+            throw new TechnicalException(TechnicalExceptionMessage.FIND_USER_ERROR);
+        }
+    }
+
+    @Override
+    public UserAccount findByIdUsuario(Long id) {
+        log.info("[USER-REPO] Starting search for user with ID '{}'", id);
+        try {
+            return repository.findById(id)
+                    .map(entity -> {
+                        UserAccount model = mapper.map(entity, UserAccount.class);
+                        if (entity.getRole() != null) {
+                            model.setRoleId(entity.getRole().getIdRole());
+                            model.setRoleName(entity.getRole().getName());
+                        }
+                        log.debug("[USER-REPO] User entity found for ID '{}': {}", id, entity);
+                        return model;
+                    })
+                    .orElseThrow(() -> new TechnicalException(TechnicalExceptionMessage.USER_NOT_FOUND));
+
+        } catch (TechnicalException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("[USER-REPO] Error finding user by userId '{}': {}", id, e.getMessage(), e);
             throw new TechnicalException(TechnicalExceptionMessage.FIND_USER_ERROR);
         }
     }
