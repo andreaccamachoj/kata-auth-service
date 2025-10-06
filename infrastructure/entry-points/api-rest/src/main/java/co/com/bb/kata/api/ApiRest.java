@@ -1,7 +1,6 @@
 package co.com.bb.kata.api;
 import co.com.bb.kata.api.dto.request.LoginRequest;
 import co.com.bb.kata.api.dto.request.RegisterUserRequest;
-import co.com.bb.kata.api.dto.request.UserRequest;
 import co.com.bb.kata.api.handler.AuthHandler;
 import co.com.bb.kata.model.login.UserLogged;
 import co.com.bb.kata.model.useraccount.UserAccount;
@@ -47,9 +46,9 @@ public class ApiRest {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(path = "/user")
-    public ResponseEntity<UserAccount> getUserByEmail(@RequestBody UserRequest userRequest) {
-        UserAccount user = handler.getUserByUserId(userRequest.getUserId());
+    @GetMapping(path = "/user/{userId}")
+    public ResponseEntity<UserAccount> getUserByEmail(@PathVariable("userId") Long userId) {
+        UserAccount user = handler.getUserByUserId(userId);
         return ResponseEntity.ok(user);
     }
 }
