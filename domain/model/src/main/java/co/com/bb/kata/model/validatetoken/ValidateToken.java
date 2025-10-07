@@ -12,4 +12,5 @@ public class ValidateToken {
     private boolean valid;
     private String subject;
     private String role;
+    private Long userId;
 }

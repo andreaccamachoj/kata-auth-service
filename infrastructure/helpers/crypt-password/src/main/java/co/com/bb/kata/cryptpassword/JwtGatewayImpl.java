@@ -37,6 +37,7 @@ public class JwtGatewayImpl implements JwtGateway {
                 .setSubject(user.getEmail())
                 .claim("role", user.getRoleId())
                 .claim("name", user.getFirstName() + " " + user.getLastName())
+                .claim("userid", user.getId())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiresAt)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -72,6 +73,7 @@ public class JwtGatewayImpl implements JwtGateway {
                     .userName(claims.get("name", String.class))
                     .email(claims.getSubject())
                     .role(String.valueOf(claims.get("role")))
+                    .userId(claims.get("userid", Long.class))
                     .build();
 
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {

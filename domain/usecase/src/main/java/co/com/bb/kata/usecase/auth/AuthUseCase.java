@@ -74,6 +74,7 @@ public class AuthUseCase {
                 .userName(user.getFirstName() + " " + user.getLastName())
                 .email(user.getEmail())
                 .role(rolRepository.findNameByIdRole(user.getRoleId()))
+                .userId(user.getId())
                 .build();
     }
 
@@ -85,6 +86,7 @@ public class AuthUseCase {
                     .valid(true)
                     .subject(userLogged.getEmail())
                     .role(userLogged.getRole())
+                    .userId(userLogged.getUserId())
                     .build();
 
         } catch (TechnicalException e) {
