@@ -1,10 +1,12 @@
-# Proyecto Base Implementando Clean Architecture
+# 🔐 Microservicio de Autenticación – CoE Development Platform
 
 ## Antes de Iniciar
 
-Empezaremos por explicar los diferentes componentes del proyectos y partiremos de los componentes externos, continuando con los componentes core de negocio (dominio) y por �ltimo el inicio y configuraci�n de la aplicaci�n.
+Este microservicio forma parte de la plataforma **CoE Development Platform**, una solución diseñada para gestionar el registro, autenticación y validación de usuarios, proporcionando tokens **JWT** utilizados por los demás microservicios del ecosistema (como el microservicio de Cursos 🎓).
 
-Lee el art�culo [Clean Architecture � Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
+Emplea **Java 17**, **Spring Boot 3**, y sigue los lineamientos de **Arquitectura Limpia (Clean Architecture)**, promoviendo la independencia de frameworks, bases de datos y librerías externas.
+
+Lee el artículo [Clean Architecture – Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
 
 # Arquitectura
 
@@ -12,36 +14,153 @@ Lee el art�culo [Clean Architecture � Aislando los detalles](https://medium.com/
 
 ## Domain
 
-Es el m�dulo m�s interno de la arquitectura, pertenece a la capa del dominio y encapsula la l�gica y reglas del negocio mediante modelos y entidades del dominio.
+Este es el módulo más interno de la arquitectura.  
+Pertenece a la capa del **dominio** y encapsula la **lógica y reglas del negocio** mediante entidades y modelos de dominio.
+
+### Contiene:
+- **Modelos del dominio:** `UserAccount`, `Credential`, `Role`, `Permission`, `TokenSession`.
+- **Interfaces gateway:** Definen los puertos de entrada/salida para los repositorios y la lógica JWT.
+- **Excepciones de negocio y técnicas:** Manejo centralizado de errores de dominio.
 
 ## Usecases
 
-Este m�dulo gradle perteneciente a la capa del dominio, implementa los casos de uso del sistema, define l�gica de aplicaci�n y reacciona a las invocaciones desde el m�dulo de entry points, orquestando los flujos hacia el m�dulo de entities.
+Este módulo pertenece también a la capa del dominio y define la **lógica de aplicación**.  
+Implementa los casos de uso que orquestan las reglas de negocio para los flujos principales:
+
+- Registro de usuario
+- Inicio de sesión
+- Validación de token JWT
+- Cierre de sesión
+- Consulta de información de usuario
+
+Los casos de uso no dependen de ningún framework ni tecnología, solo del dominio.
 
 ## Infrastructure
 
+Contiene las implementaciones concretas de los puertos definidos en el dominio.  
+Esta capa se divide en tres partes: **Helpers**, **Driven Adapters** y **Entry Points**.
+
 ### Helpers
 
-En el apartado de helpers tendremos utilidades generales para los Driven Adapters y Entry Points.
+Incluyen utilidades generales utilizadas por los adapters y controladores.  
+Ejemplos:
+- Codificación y encriptación con BCrypt.
+- Generación y validación de tokens JWT.
+- Excepciones y utilidades genéricas para repositorios.
 
-Estas utilidades no est�n arraigadas a objetos concretos, se realiza el uso de generics para modelar comportamientos
-gen�ricos de los diferentes objetos de persistencia que puedan existir, este tipo de implementaciones se realizan
-basadas en el patr�n de dise�o [Unit of Work y Repository](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006)
-
-Estas clases no puede existir solas y debe heredarse su compartimiento en los **Driven Adapters**
+Estas utilidades están basadas en patrones como [Repository y Unit of Work](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006).
 
 ### Driven Adapters
 
-Los driven adapter representan implementaciones externas a nuestro sistema, como lo son conexiones a servicios rest,
-soap, bases de datos, lectura de archivos planos, y en concreto cualquier origen y fuente de datos con la que debamos
-interactuar.
+Representan implementaciones externas al sistema.  
+Este microservicio utiliza los siguientes:
+
+- **JPA Adapter:** Conexión a **PostgreSQL** para la persistencia de usuarios, roles, credenciales y sesiones.
+
+Cada adapter implementa un **gateway** definido en el dominio.
 
 ### Entry Points
 
-Los entry points representan los puntos de entrada de la aplicaci�n o el inicio de los flujos de negocio.
+Representan los puntos de entrada a la aplicación, exponiendo la lógica del negocio mediante **REST Controllers**.
+
+Endpoints principales expuestos:
+
+| Método | Endpoint | Descripción |
+|--------|-----------|-------------|
+| `POST` | `/api/v1/auth/register` | Registra un nuevo usuario |
+| `POST` | `/api/v1/auth/login` | Autentica y genera un JWT |
+| `GET` | `/api/v1/auth/validate` | Valida la autenticidad del token |
+| `DELETE` | `/api/v1/auth/logout/{userId}` | Cierra la sesión del usuario |
+| `GET` | `/api/v1/auth/user/{userId}` | Consulta los datos del usuario |
 
 ## Application
 
-Este m�dulo es el m�s externo de la arquitectura, es el encargado de ensamblar los distintos m�dulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma autom�tica, inyectando en �stos instancias concretas de las dependencias declaradas. Adem�s inicia la aplicaci�n (es el �nico m�dulo del proyecto donde encontraremos la funci�n �public static void main(String[] args)�.
+Es el módulo más externo de la arquitectura.  
+Se encarga de **ensamblar todos los módulos**, resolver las dependencias y crear los beans de los casos de uso.
 
-**Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+En esta capa se encuentra la clase principal que contiene el método:
+```java
+public static void main(String[] args)
+```
+
+### Responsabilidades:
+- Configuración de **Spring Boot**.
+- Definición de Beans y componentes.
+- Escaneo automático de componentes (`@ComponentScan`).
+- Inicialización del contexto de aplicación.
+
+## Ejecución Local
+
+### ⚙️ Requisitos previos
+
+| Requisito | Versión mínima |
+|------------|----------------|
+| **Java JDK** | 17 |
+| **PostgreSQL** | 15 o superior |
+| **Gradle** | 8.x |
+
+### 🧾 Configuración del entorno
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/andreaccamachoj/kata-course-service
+   ```
+
+2. **Crear la base de datos:**
+   
+   Ejecutar el archivo `init.sql` que se encuentra en: `deployment/db/init_db.sql`
+
+3. 
+   
+
+3. **Configurar `application.yml`:**
+   ```yaml
+   server:
+     port: 8080
+
+   spring:
+     datasource:
+       url: jdbc:postgresql://localhost:5432/authdb
+       username: postgres
+       password: postgres
+       driver-class-name: org.postgresql.Driver
+     jpa:
+       hibernate:
+         ddl-auto: update
+       show-sql: true
+   ```
+
+### ▶️ Compilación y ejecución
+
+1. **Compilar el proyecto:**
+   ```bash
+   ./gradlew clean build
+   ```
+
+2. **Ejecutar la aplicación:**
+   ```bash
+   java -jar build/libs/auth.jar
+   ```
+
+3. **Probar el servicio:**
+   ```
+   http://localhost:8080/api/v1/auth/validate
+   ```
+
+## Flujo de Autenticación
+
+1. El usuario se registra (`/register`).
+2. Inicia sesión (`/login`) y recibe un **token JWT**.
+3. Los microservicios (por ejemplo, Cursos) validan el token con `/validate`.
+4. El usuario puede cerrar sesión con `/logout/{userId}`.
+
+## Variables de Entorno
+
+| Variable | Descripción |
+|-----------|-------------|
+| `URL_DB` | URL de la base de datos de PostgreSQL  |
+| `USERNAME_DB` | Usuario de base de datos               |
+| `PASSWORD_DB` | Contraseña de base de datos            |
+
+## Autor
+Desarrollado por **Andrea C.**
