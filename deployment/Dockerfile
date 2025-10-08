@@ -11,7 +11,7 @@ RUN ./gradlew :app-service:clean :app-service:bootJar -x test --no-daemon
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-COPY --from=build /workspace/applications/app-service/build/libs/course.jar auth.jar
+COPY --from=build /workspace/applications/app-service/build/libs/auth.jar app.jar
 
 ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70 -Djava.security.egd=file:/dev/./urandom"
 EXPOSE 8080

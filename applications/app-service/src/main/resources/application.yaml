@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: "auth"
@@ -14,7 +14,7 @@ spring:
   datasource:
     url: "${URL_DB:jdbc:postgresql://localhost:5432/auth}"
     username: "${USERNAME_DB:postgres}"
-    password: "${PASSWORD_DB:root}"
+    password: "${PASSWORD_DB:mysecretpassword}"
     driverClassName: "org.postgresql.Driver"
   jpa:
     hibernate:
@@ -31,4 +31,4 @@ management:
       probes:
         enabled: true
 cors:
-  allowed-origins: "${ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}"
+  allowed-origins: "http://localhost:4173,http://localhost:4200,http://localhost:8080,http://localhost:8082,http://localhost:8081"
